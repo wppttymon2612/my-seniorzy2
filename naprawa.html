@@ -30,12 +30,6 @@
             text-align: center;
         }
 
-        .back-btn {
-            background: rgba(255,255,255,0.25); border: none; color: white;
-            padding: 12px 24px; border-radius: 15px; font-weight: 900;
-            margin-bottom: 15px; cursor: pointer; text-transform: uppercase;
-        }
-
         /* CHAT AI */
         .ai-container {
             background: var(--white); border-radius: 30px; padding: 20px;
@@ -75,13 +69,12 @@
         .tool-card span { font-size: 45px; display: block; margin-bottom: 10px; }
         .tool-card b { font-size: 14px; color: var(--primary); display: block; line-height: 1.2; }
 
-        /* NAKŁADKA ROZWIĄZAŃ (TO TU BYŁ BŁĄD) */
         #fix-overlay {
             display: none; 
             position: fixed; 
             top: 0; left: 0; 
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); /* Przyciemnienie tła */
+            background: rgba(0,0,0,0.7);
             z-index: 2000; 
             padding: 20px; 
             box-sizing: border-box;
@@ -107,7 +100,6 @@
 <body>
 
     <div class="header">
-        <button class="back-btn" onclick="location.href='index.html'">⬅ WRÓĆ DO GAZETY</button>
         <h1 style="margin:0;">Pogotowie Cyfrowe</h1>
         <p style="margin:5px 0 0 0; opacity: 0.9;">Pomogę Ci naprawić Twój telefon</p>
     </div>
