@@ -10,6 +10,8 @@
             --danger-red: #ef4444;
             --bg: #f8fafc;
             --text: #1e293b;
+            --primary: #1e3a8a;
+            --ai-color: #4f46e5;
         }
 
         body { 
@@ -21,18 +23,19 @@
             text-align: center;
         }
 
-        h1 { color: #1e3a8a; font-size: 28px; margin-bottom: 30px; }
+        h1 { color: var(--primary); font-size: 28px; margin-bottom: 25px; }
 
         /* SIATKA PRZYCISKÓW */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
         .tool-card {
             background: white;
-            padding: 25px 10px;
+            padding: 20px 10px;
             border-radius: 30px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             border: 2px solid #e2e8f0;
@@ -44,9 +47,52 @@
         }
 
         .tool-card:active { transform: scale(0.95); background: #f0f7ff; }
+        .tool-icon { font-size: 45px; margin-bottom: 10px; }
+        .tool-name { font-weight: 800; font-size: 14px; color: var(--primary); text-transform: uppercase; }
 
-        .tool-icon { font-size: 50px; margin-bottom: 15px; }
-        .tool-name { font-weight: 800; font-size: 16px; color: #1e3a8a; text-transform: uppercase; }
+        /* ASYSTENT AI */
+        .ai-zone {
+            margin: 20px 0;
+            padding: 20px;
+            background: #eef2ff;
+            border-radius: 35px;
+            border: 3px solid var(--ai-color);
+            text-align: center;
+        }
+
+        .ai-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 20px;
+            border: 2px solid var(--ai-color);
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .ai-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--ai-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 18px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        #ai-response {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 20px;
+            text-align: left;
+            border-left: 8px solid var(--ai-color);
+            font-weight: 600;
+        }
 
         /* OKNO PORADY */
         #fix-overlay {
@@ -54,7 +100,7 @@
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg);
-            z-index: 100;
+            z-index: 1000;
             padding: 30px 20px;
             box-sizing: border-box;
             overflow-y: auto;
@@ -62,7 +108,7 @@
 
         .fix-content {
             background: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
@@ -70,38 +116,52 @@
         .step-box {
             background: #f0fdf4;
             border-left: 8px solid var(--safety-green);
-            padding: 20px;
-            margin: 20px 0;
+            padding: 18px;
+            margin: 15px 0;
             text-align: left;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
 
+        /* PRZYCISKI DOLNE */
         .btn-close {
-            background: #1e3a8a;
+            background: var(--primary);
             color: white;
-            padding: 20px 40px;
+            padding: 20px;
             border-radius: 50px;
             border: none;
             font-weight: 900;
             font-size: 18px;
-            margin-top: 30px;
             width: 100%;
+            margin-top: 20px;
         }
 
         .emergency-btn {
             background: var(--danger-red);
             color: white;
             padding: 15px;
-            border-radius: 20px;
+            border-radius: 25px;
             text-decoration: none;
             display: block;
-            margin-top: 40px;
-            font-weight: bold;
+            margin: 10px 0;
+            font-weight: 900;
+        }
+
+        .back-btn {
+            background: #64748b;
+            color: white;
+            padding: 15px;
+            border-radius: 25px;
+            border: none;
+            width: 100%;
+            font-weight: 900;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
+
+    <button class="back-btn" onclick="location.href='index.html'">⬅ POWRÓT DO GAZETY</button>
 
     <h1>W czym masz problem?</h1>
 
@@ -116,7 +176,7 @@
         </div>
         <div class="tool-card" onclick="showFix('dark')">
             <div class="tool-icon">🔆</div>
-            <div class="tool-name">EKRAN JEST CIEMNY</div>
+            <div class="tool-name">EKRAN CIEMNY</div>
         </div>
         <div class="tool-card" onclick="showFix('battery')">
             <div class="tool-icon">🔋</div>
@@ -124,11 +184,24 @@
         </div>
         <div class="tool-card" onclick="showFix('font')">
             <div class="tool-icon">🔍</div>
-            <div class="tool-name">LITERY SĄ ZA MAŁE</div>
+            <div class="tool-name">MAŁE LITERY</div>
         </div>
         <div class="tool-card" onclick="showFix('restart')">
             <div class="tool-icon">🔄</div>
-            <div class="tool-name">TELEFON "ZAMULIŁ"</div>
+            <div class="tool-name">ZAWIESIŁ SIĘ</div>
+        </div>
+        <div class="tool-card" onclick="showFix('camera')">
+            <div class="tool-icon">📸</div>
+            <div class="tool-name">ZŁE ZDJĘCIA</div>
+        </div>
+    </div>
+
+    <div class="ai-zone">
+        <h2 style="color: var(--ai-color); margin-bottom: 10px;">🤖 ASYSTENT POMOCNIK</h2>
+        <input type="text" id="ai-input" class="ai-input" placeholder="Opisz problem (np. brak głosu)...">
+        <button class="ai-btn" onclick="askAI()">ZAPYTAJ ASYSTENTA</button>
+        <div id="ai-response">
+            <div id="ai-text"></div>
         </div>
     </div>
 
@@ -136,9 +209,9 @@
 
     <div id="fix-overlay">
         <div class="fix-content">
-            <h2 id="fix-title">Tytuł</h2>
+            <h2 id="fix-title" style="color: var(--primary);">Tytuł</h2>
             <div id="fix-steps"></div>
-            <button class="btn-close" onclick="closeFix()">JUŻ DZIAŁA!</button>
+            <button class="btn-close" onclick="closeFix()">JUŻ DZIAŁA, DZIĘKUJĘ!</button>
         </div>
     </div>
 
@@ -146,66 +219,31 @@
         const solutions = {
             audio: {
                 t: "Problem z dźwiękiem",
-                s: [
-                    "Naciśnij GÓRNY przycisk z boku obudowy kilka razy.",
-                    "Sprawdź, czy na ekranie nie widać ikony przekreślonego głośnika.",
-                    "Jeśli masz podłączone słuchawki – odłącz je, mogą blokować głośnik.",
-                    "Sprawdź, czy nie jest włączony tryb 'Nie przeszkadzać' (ikona księżyca)."
-                ]
+                s: ["Naciśnij GÓRNY przycisk z boku obudowy kilka razy.", "Sprawdź, czy na ekranie nie widać ikony przekreślonego głośnika.", "Jeśli masz podłączone słuchawki – odłącz je."]
             },
             internet: {
                 t: "Brak internetu",
-                s: [
-                    "Przesuń palcem z samej góry ekranu w dół (otwórz menu).",
-                    "Sprawdź czy ikonka SAMOLOTU jest WYŁĄCZONA.",
-                    "Sprawdź czy ikonka WIFI (łuki) lub DANE (strzałki) jest NIEBIESKA.",
-                    "Wyłącz i włącz WiFi ponownie – to często pomaga."
-                ]
+                s: ["Przesuń palcem z góry ekranu w dół.", "Sprawdź czy ikonka SAMOLOTU jest wyłączona.", "Sprawdź czy ikonka WIFI (łuki) jest niebieska."]
             },
             dark: {
                 t: "Ciemny ekran",
-                s: [
-                    "Przesuń palcem z góry ekranu w dół.",
-                    "Znajdź pasek ze słońcem i przesuń go palcem w prawą stronę.",
-                    "Sprawdź, czy nie masz włączonego 'Oszczędzania energii', które przyciemnia ekran.",
-                    "Upewnij się, że etui telefonu nie zasłania czujnika światła u góry."
-                ]
+                s: ["Przesuń palcem z góry ekranu w dół.", "Znajdź pasek ze słońcem i przesuń go w prawą stronę."]
             },
             battery: {
-                t: "Bateria szybko ucieka",
-                s: [
-                    "Zmniejsz jasność ekranu (suwak ze słońcem).",
-                    "Wyłącz Bluetooth i Lokalizację (GPS), jeśli ich teraz nie używasz.",
-                    "Zamknij nieużywane aplikacje.",
-                    "Podłącz telefon do ładowarki oryginalnym kablem."
-                ]
+                t: "Bateria ucieka",
+                s: ["Zmniejsz jasność ekranu.", "Wyłącz nieużywane aplikacje.", "Podłącz telefon do ładowarki."]
             },
             font: {
                 t: "Litery są za małe",
-                s: [
-                    "Wejdź w Ustawienia telefonu (ikona koła zębatego).",
-                    "Znajdź sekcję 'Wyświetlacz' lub 'Ekran'.",
-                    "Kliknij 'Rozmiar czcionki' i przesuń suwak na maksa w prawo.",
-                    "Możesz też włączyć funkcję 'Pogrubienie tekstu', aby był wyraźniejszy."
-                ]
+                s: ["Wejdź w Ustawienia (koło zębate).", "Znajdź 'Wyświetlacz' lub 'Ekran'.", "Zmień 'Rozmiar czcionki' na największy."]
             },
             restart: {
                 t: "Telefon się zawiesił",
-                s: [
-                    "Przytrzymaj boczny przycisk włączania przez bardzo długo (10-15 sekund).",
-                    "Wybierz opcję 'Uruchom ponownie' (zielona ikona).",
-                    "Jeśli to nie działa, wyjmij telefon z etui i zostaw go na chwilę, by ostygł.",
-                    "Cierpliwość to klucz – czasem telefon musi po prostu 'pomyśleć'."
-                ]
+                s: ["Przytrzymaj boczny przycisk włączania przez 15 sekund.", "Wybierz 'Uruchom ponownie'."]
             },
             camera: {
-                t: "Aparat nie działa",
-                s: [
-                    "Przetrzyj obiektyw z tyłu telefonu miękką szmatką.",
-                    "Sprawdź, czy etui nie zasłania oczka aparatu.",
-                    "Zamknij aplikację Aparat i otwórz ją jeszcze raz.",
-                    "Upewnij się, że masz wolne miejsce w pamięci na nowe zdjęcia."
-                ]
+                t: "Aparat / Zdjęcia",
+                s: ["Przetrzyj obiektyw z tyłu telefonu szmatką.", "Upewnij się, że palec nie zasłania oczka aparatu."]
             }
         };
 
@@ -222,6 +260,26 @@
 
         function closeFix() {
             document.getElementById('fix-overlay').style.display = 'none';
+        }
+
+        function askAI() {
+            const input = document.getElementById('ai-input').value.toLowerCase();
+            const responseBox = document.getElementById('ai-response');
+            const responseText = document.getElementById('ai-text');
+            let answer = "🤖 Nie jestem pewien, jak pomóc. Spróbuj kliknąć jedną z ikon powyżej lub napisz np. 'dźwięk'.";
+
+            if (input.includes("dźwięk") || input.includes("głos") || input.includes("słyszę")) {
+                answer = "🤖 Spróbuj podgłośnić telefon przyciskiem z boku obudowy. Sprawdź też, czy głośnik nie jest zakryty.";
+            } else if (input.includes("internet") || input.includes("wifi")) {
+                answer = "🤖 Sprawdź, czy ikonka Wi-Fi na górze ekranu jest włączona. Możesz też spróbować wyłączyć i włączyć telefon.";
+            } else if (input.includes("jasn") || input.includes("ciemn") || input.includes("widzę")) {
+                answer = "🤖 Poszukaj suwaka ze słońcem w menu na górze ekranu i przesuń go w prawo.";
+            } else if (input.includes("cześć") || input.includes("dzień dobry")) {
+                answer = "🤖 Dzień dobry! W czym mogę Ci dzisiaj pomóc?";
+            }
+
+            responseText.innerText = answer;
+            responseBox.style.display = 'block';
         }
     </script>
 </body>
