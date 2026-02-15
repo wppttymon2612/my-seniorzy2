@@ -27,6 +27,7 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white; padding: 25px; border-radius: 30px; margin-bottom: 20px;
             box-shadow: 0 8px 20px rgba(30,58,138,0.2);
+            text-align: center;
         }
 
         .back-btn {
@@ -35,7 +36,7 @@
             margin-bottom: 15px; cursor: pointer; text-transform: uppercase;
         }
 
-        /* CHAT AI - DESIGN PREMIUM */
+        /* CHAT AI */
         .ai-container {
             background: var(--white); border-radius: 30px; padding: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -55,7 +56,7 @@
         .chat-controls { display: flex; gap: 10px; }
         .chat-input {
             flex: 1; padding: 16px; border-radius: 18px; border: 2px solid #cbd5e1;
-            font-size: 16px; outline: none;
+            font-size: 16px; outline: none; width: 50%;
         }
         .chat-send {
             background: var(--secondary); color: white; border: none;
@@ -68,29 +69,38 @@
             background: var(--white); padding: 20px 10px; border-radius: 25px;
             border: 2px solid #e2e8f0; text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.2s;
+            cursor: pointer;
         }
         .tool-card:active { transform: scale(0.96); background: #f8fafc; }
         .tool-card span { font-size: 45px; display: block; margin-bottom: 10px; }
         .tool-card b { font-size: 14px; color: var(--primary); display: block; line-height: 1.2; }
 
-        /* NAKŁADKA ROZWIĄZAŃ */
+        /* NAKŁADKA ROZWIĄZAŃ (TO TU BYŁ BŁĄD) */
         #fix-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 2000; padding: 20px; box-sizing: border-box;
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); /* Przyciemnienie tła */
+            z-index: 2000; 
+            padding: 20px; 
+            box-sizing: border-box;
         }
         .fix-box {
             background: white; padding: 30px; border-radius: 40px;
-            height: 92%; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            max-height: 90%; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            position: relative; top: 5%;
         }
         .step {
             background: var(--step-bg); padding: 20px; margin: 15px 0;
             border-radius: 20px; border-left: 8px solid #22c55e;
-            text-align: left; font-size: 19px; font-weight: 600;
+            text-align: left; font-size: 18px; font-weight: 600;
         }
         .close-btn {
             background: var(--primary); color: white; width: 100%;
             padding: 20px; border-radius: 25px; border: none;
             font-size: 20px; font-weight: 900; margin-top: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -104,7 +114,7 @@
 
     <div class="ai-container">
         <div class="chat-window" id="chat-window">
-            <div class="bubble bot">Dzień dobry! Napisz mi, co się stało (np. "brak internetu"), a ja spróbuję Cię poprowadzić.</div>
+            <div class="bubble bot">Dzień dobry! Napisz mi, co się stało (np. "jak wysłać zdjęcie?"), a ja Cię poprowadzę.</div>
         </div>
         <div class="chat-controls">
             <input type="text" id="ai-input" class="chat-input" placeholder="W czym pomóc?">
@@ -123,70 +133,78 @@
         <div class="tool-card" onclick="showFix('restart')"><span>🔄</span><b>Telefon się zaciął</b></div>
     </div>
 
+    <div id="fix-overlay">
+        <div class="fix-box">
+            <h2 id="fix-title" style="color:var(--primary); text-align: center;"></h2>
+            <div id="fix-steps"></div>
+            <button class="close-btn" onclick="closeFix()">JUŻ DZIAŁA, DZIĘKUJĘ!</button>
+        </div>
+    </div>
+
     <script>
         const solutions = {
             audio: { 
                 t: "Problem: Nic nie słyszę", 
                 s: [
-                    "Znajdź dwa podłużne przyciski z boku obudowy. Naciskaj ten GÓRNY, aż zobaczysz pasek głośności na ekranie.",
+                    "Znajdź dwa przyciski z boku obudowy. Naciskaj ten GÓRNY, aż zobaczysz pasek na ekranie.",
                     "Przesuń palcem z samej góry ekranu w dół. Sprawdź, czy ikona głośnika nie jest przekreślona.",
-                    "Sprawdź, czy palec nie zasłania małej szczeliny u góry telefonu (tam jest głośnik do rozmów)."
+                    "Upewnij się, że tryb 'Nie przeszkadzać' (ikona księżyca) jest wyłączony."
                 ] 
             },
             internet: { 
                 t: "Problem: Brak internetu", 
                 s: [
-                    "Otwórz górne menu (przesuń palcem z góry na dół). Ikonka Wi-Fi (łuki) musi być niebieska.",
-                    "Upewnij się, że tryb SAMOLOT (ikona samolotu) jest WYŁĄCZONY.",
-                    "Czasami wystarczy wyłączyć telefon na chwilę i włączyć go ponownie."
+                    "Przesuń palcem z góry ekranu w dół. Ikonka Wi-Fi (łuki) musi świecić na niebiesko.",
+                    "Sprawdź, czy ikona samolotu jest szara (wyłączona).",
+                    "Wyłącz telefon na 10 sekund i włącz go ponownie – to zazwyczaj pomaga."
                 ] 
             },
             dark: { 
                 t: "Problem: Ekran jest za ciemny", 
                 s: [
-                    "Przesuń palcem z góry ekranu dwa razy w dół, aby zobaczyć suwak ze słońcem.",
-                    "Przesuń kropkę na tym suwaku w prawą stronę, aż poczujesz, że obraz jest wyraźny.",
-                    "Jeśli ekran sam się ściemnia, upewnij się, że nie zakrywasz dłonią górnej części obudowy."
+                    "Przesuń palcem z góry ekranu dwa razy w dół. Poszukaj suwaka z ikoną słońca.",
+                    "Przesuń kropkę na suwaku maksymalnie w prawą stronę.",
+                    "Sprawdź, czy nie masz włączonego 'Oszczędzania energii' w menu na górze."
                 ] 
             },
             battery: { 
                 t: "Problem: Bateria szybko pada", 
                 s: [
-                    "Zmniejsz jasność ekranu (suwak ze słońcem). Jasny ekran pożera najwięcej prądu.",
-                    "Podłącz telefon do ładowania zawsze, gdy masz taką możliwość.",
-                    "Zamknij nieużywane programy – naciśnij kwadracik lub kreski na dole ekranu i wybierz 'Zamknij wszystko'."
+                    "Zmniejsz jasność ekranu (suwak ze słońcem).",
+                    "Naciśnij przycisk z trzema kreskami na dole ekranu i wybierz 'Zamknij wszystko'.",
+                    "Wyłącz Bluetooth i GPS (Lokalizację) w menu na górze, jeśli ich nie używasz."
                 ] 
             },
             font: { 
                 t: "Problem: Za małe litery", 
                 s: [
-                    "Znajdź ikonę USTAWIENIA (koło zębate).",
-                    "Kliknij w napis WYŚWIETLACZ lub EKRAN.",
-                    "Znajdź opcję ROZMIAR CZCIONKI i przesuń suwak na sam koniec w prawo."
+                    "Otwórz 'Ustawienia' (ikona koła zębatego).",
+                    "Kliknij w 'Wyświetlacz' lub 'Ekran'.",
+                    "Wybierz 'Rozmiar czcionki' i przesuń suwak w prawo."
                 ] 
             },
             camera: { 
                 t: "Problem: Niewyraźne zdjęcia", 
                 s: [
-                    "To najczęstszy problem: weź miękką szmatkę i przetrzyj szkiełka aparatów z tyłu telefonu.",
-                    "Podczas robienia zdjęcia trzymaj telefon obiema rękami, żeby nie drżał.",
-                    "Kliknij palcem na ekranie w miejsce, które chcesz, żeby było ostre."
+                    "Przetrzyj obiektyw z tyłu telefonu suchą szmatką lub koszulką.",
+                    "Gdy robisz zdjęcie, kliknij palcem na osobę na ekranie, aby telefon złapał ostrość.",
+                    "Trzymaj telefon nieruchomo przez sekundę po naciśnięciu przycisku zdjęcia."
                 ] 
             },
             whatsapp: { 
-                t: "Problem: WhatsApp nie wysyła", 
+                t: "Problem: WhatsApp nie działa", 
                 s: [
-                    "Sprawdź, czy masz internet (ikonka Wi-Fi lub Dane Mobilne).",
-                    "Uruchom telefon ponownie – to naprawia 90% problemów z aplikacjami.",
-                    "Upewnij się, że nie masz włączonego trybu oszczędzania energii."
+                    "Upewnij się, że masz włączony internet (Wi-Fi lub Dane).",
+                    "Sprawdź, czy nie masz do pobrania aktualizacji w Sklepie Play.",
+                    "Uruchom telefon ponownie."
                 ] 
             },
             restart: { 
                 t: "Problem: Telefon się zaciął", 
                 s: [
-                    "Spokojnie. Przytrzymaj przycisk włączania z boku przez bardzo długo (licz do 20).",
-                    "Gdy pojawi się menu, kliknij zieloną ikonkę URUCHOM PONOWNIE.",
-                    "Jeśli to nie pomaga, odłóż telefon na 5 minut – może po prostu musi 'pomyśleć'."
+                    "Trzymaj boczny przycisk włączania przez pełne 15 sekund, aż ekran zgaśnie.",
+                    "Poczekaj chwilę i włącz go normalnie.",
+                    "Nie naciskaj wielu rzeczy na raz – telefon potrzebuje sekundy na reakcję."
                 ] 
             }
         };
@@ -206,17 +224,16 @@
             const win = document.getElementById('chat-window');
             win.innerHTML += `<div class="bubble user">${q}</div>`;
             
-            let a = "🤖 Nie jestem pewien, jak pomóc. Spróbuj napisać jedno słowo, np. 'zdjęcie', 'mapa' lub 'wiadomość'.";
+            let a = "🤖 Nie rozumiem dokładnie. Napisz np. 'zdjęcie', 'mapa', 'youtube' lub 'latarka'.";
 
-            if(q.includes("zdjęc") || q.includes("fot")) a = "🤖 Aby zrobić zdjęcie: otwórz aplikację Aparat (ikona obiektywu) i naciśnij duże, białe kółko na dole ekranu.";
-            else if(q.includes("map") || q.includes("dojazd") || q.includes("taksówk")) a = "🤖 Aby sprawdzić drogę: otwórz aplikację MAPY, kliknij pasek na górze i wpisz adres. Potem kliknij przycisk TRASA.";
-            else if(q.includes("wiadom") || q.includes("sms") || q.includes("napisać")) a = "🤖 Aby wysłać SMS: otwórz aplikację Wiadomości (niebieska chmurka), kliknij 'Rozpocznij czat', wybierz osobę i napisz tekst na dole.";
-            else if(q.includes("kontakt") || q.includes("numer") || q.includes("zapisz")) a = "🤖 Nowy numer: otwórz aplikację Kontakty lub Telefon, kliknij PLUS (+), wpisz imię oraz numer i kliknij ZAPISZ na górze.";
-            else if(q.includes("latark")) a = "🤖 Latarka: Przesuń palcem z samej góry ekranu w dół i kliknij ikonkę latarki. Jeśli jej nie widzisz, przesuń w bok.";
-            else if(q.includes("internet") || q.includes("wifi")) a = "🤖 Brak internetu? Sprawdź, czy ikonka łuków (Wi-Fi) jest niebieska w menu na górze.";
-            else if(q.includes("jasno") || q.includes("ciemno")) a = "🤖 Przesuń palcem z góry na dół i poszukaj suwaka ze słońcem. Przesuń go w prawo.";
-            else if(q.includes("cześć") || q.includes("dzień dobry")) a = "🤖 Dzień dobry! Miło Cię widzieć. W czym mogę Ci dzisiaj pomóc?";
-            else if(q.includes("wnuc") || q.includes("rodzin")) a = "🤖 Pamiętaj, że wnuki na pewno chętnie pomogą! Może spróbujesz do nich zadzwonić przez WhatsApp?";
+            if(q.includes("zdjęc") || q.includes("fot")) a = "🤖 Otwórz aplikację Aparat i naciśnij duże białe kółko. Jeśli chcesz zobaczyć zdjęcia, kliknij w mały kwadracik obok kółka.";
+            else if(q.includes("map") || q.includes("droga") || q.includes("jechać")) a = "🤖 Otwórz aplikację 'Mapy Google', wpisz adres na górze i kliknij niebieski przycisk 'Start' lub 'Trasa'.";
+            else if(q.includes("sms") || q.includes("wiadom")) a = "🤖 Wejdź w ikonę niebieskiej chmurki (Wiadomości), wybierz kontakt i napisz tekst na dole, tam gdzie miga kreska.";
+            else if(q.includes("latark")) a = "🤖 Przesuń palcem z góry ekranu w dół i kliknij ikonę latarki. Jeśli jej nie widzisz, przesuń menu w lewo.";
+            else if(q.includes("filmy") || q.includes("youtube") || q.includes("oglądać")) a = "🤖 Filmy najlepiej oglądać w aplikacji YouTube. Kliknij lupę na górze, wpisz czego szukasz i dotknij filmu.";
+            else if(q.includes("płat") || q.includes("blik") || q.includes("płacić")) a = "🤖 Aby zapłacić telefonem, musisz mieć aplikację swojego banku. Otwórz ją i poszukaj ikony 'BLIK'.";
+            else if(q.includes("cześć") || q.includes("dzień dobry")) a = "🤖 Dzień dobry! Bardzo miło mi Cię gościć. W czym mogę Ci dzisiaj pomóc?";
+            else if(q.includes("internet") || q.includes("wifi")) a = "🤖 Sprawdź menu na górze ekranu – ikonka łuków (Wi-Fi) musi być niebieska. Jeśli nie jest, kliknij ją.";
 
             setTimeout(() => {
                 win.innerHTML += `<div class="bubble bot">${a}</div>`;
