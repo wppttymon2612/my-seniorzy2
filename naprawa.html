@@ -3,283 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Napraw Coś - Pogotowie Cyfrowe</title>
+    <title>Pogotowie Cyfrowe</title>
     <style>
         :root {
-            --safety-green: #22c55e;
-            --danger-red: #ef4444;
-            --bg: #f8fafc;
-            --text: #1e293b;
             --primary: #1e3a8a;
-            --ai-color: #4f46e5;
+            --secondary: #4f46e5;
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --text: #0f172a;
+            --ai-bubble: #dbeafe;
         }
 
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: var(--bg); 
             color: var(--text); 
-            margin: 0; 
-            padding: 20px;
-            text-align: center;
+            margin: 0; padding: 20px;
+            line-height: 1.5;
         }
 
-        h1 { color: var(--primary); font-size: 28px; margin-bottom: 25px; }
+        /* NAGŁÓWEK */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-        /* SIATKA PRZYCISKÓW */
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        /* SIATKA PROBLEMÓW */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 30px;
         }
 
         .tool-card {
-            background: white;
-            padding: 20px 10px;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            background: var(--white);
+            padding: 15px;
+            border-radius: 20px;
             border: 2px solid #e2e8f0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .tool-card span { font-size: 40px; display: block; margin-bottom: 5px; }
+        .tool-card b { font-size: 13px; color: var(--primary); text-transform: uppercase; }
+
+        /* CHAT AI - NOWY DESIGN */
+        .ai-container {
+            background: var(--white);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid var(--secondary);
+            margin-bottom: 30px;
+        }
+
+        .chat-window {
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.2s;
+            gap: 10px;
         }
 
-        .tool-card:active { transform: scale(0.95); background: #f0f7ff; }
-        .tool-icon { font-size: 45px; margin-bottom: 10px; }
-        .tool-name { font-weight: 800; font-size: 14px; color: var(--primary); text-transform: uppercase; }
-
-        /* ASYSTENT AI */
-        .ai-zone {
-            margin: 20px 0;
-            padding: 20px;
-            background: #eef2ff;
-            border-radius: 35px;
-            border: 3px solid var(--ai-color);
-            text-align: center;
-        }
-
-        .ai-input {
-            width: 100%;
-            padding: 15px;
+        .bubble {
+            padding: 12px 18px;
             border-radius: 20px;
-            border: 2px solid var(--ai-color);
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
+            max-width: 85%;
+            font-size: 15px;
+            font-weight: 500;
         }
 
-        .ai-btn {
-            width: 100%;
+        .bubble.bot {
+            background: var(--ai-bubble);
+            color: var(--primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-controls { display: flex; gap: 8px; }
+
+        .chat-input {
+            flex: 1;
             padding: 15px;
-            background: var(--ai-color);
+            border-radius: 15px;
+            border: 2px solid #cbd5e1;
+            font-size: 16px;
+        }
+
+        .chat-send {
+            background: var(--secondary);
             color: white;
             border: none;
-            border-radius: 20px;
-            font-weight: 900;
-            font-size: 18px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-
-        #ai-response {
-            display: none;
-            margin-top: 15px;
             padding: 15px;
-            background: white;
-            border-radius: 20px;
-            text-align: left;
-            border-left: 8px solid var(--ai-color);
-            font-weight: 600;
+            border-radius: 15px;
+            font-weight: bold;
         }
 
-        /* OKNO PORADY */
+        /* NAKŁADKA */
         #fix-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg);
             z-index: 1000;
-            padding: 30px 20px;
+            padding: 20px;
             box-sizing: border-box;
-            overflow-y: auto;
         }
 
-        .fix-content {
+        .fix-box {
             background: white;
             padding: 25px;
-            border-radius: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 30px;
+            height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
 
-        .step-box {
+        .step {
             background: #f0fdf4;
-            border-left: 8px solid var(--safety-green);
-            padding: 18px;
-            margin: 15px 0;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
+            border-left: 5px solid #22c55e;
             text-align: left;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 17px;
         }
 
-        /* PRZYCISKI DOLNE */
-        .btn-close {
+        .close-btn {
             background: var(--primary);
             color: white;
-            padding: 20px;
-            border-radius: 50px;
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
             border: none;
-            font-weight: 900;
             font-size: 18px;
-            width: 100%;
+            font-weight: bold;
             margin-top: 20px;
-        }
-
-        .emergency-btn {
-            background: var(--danger-red);
-            color: white;
-            padding: 15px;
-            border-radius: 25px;
-            text-decoration: none;
-            display: block;
-            margin: 10px 0;
-            font-weight: 900;
-        }
-
-        .back-btn {
-            background: #64748b;
-            color: white;
-            padding: 15px;
-            border-radius: 25px;
-            border: none;
-            width: 100%;
-            font-weight: 900;
-            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-    <button class="back-btn" onclick="location.href='index.html'">⬅ POWRÓT DO GAZETY</button>
+    <div class="header">
+        <button class="back-btn" onclick="location.href='index.html'">⬅ WRÓĆ</button>
+        <h1 style="margin:0; font-size: 24px;">Pogotowie Cyfrowe</h1>
+        <p style="margin:5px 0 0 0; opacity: 0.8;">Wybierz ikonę lub zapytaj asystenta</p>
+    </div>
 
-    <h1>W czym masz problem?</h1>
+    <div class="ai-container">
+        <div class="chat-window" id="chat-window">
+            <div class="bubble bot">Dzień dobry! Jestem Twoim pomocnikiem. W czym masz dziś problem?</div>
+        </div>
+        <div class="chat-controls">
+            <input type="text" id="ai-input" class="chat-input" placeholder="Np. jak zrobić zdjęcie?">
+            <button class="chat-send" onclick="askAI()">OK</button>
+        </div>
+    </div>
 
     <div class="grid">
-        <div class="tool-card" onclick="showFix('audio')">
-            <div class="tool-icon">🔊</div>
-            <div class="tool-name">NIC NIE SŁYSZĘ</div>
-        </div>
-        <div class="tool-card" onclick="showFix('internet')">
-            <div class="tool-icon">🌐</div>
-            <div class="tool-name">BRAK INTERNETU</div>
-        </div>
-        <div class="tool-card" onclick="showFix('dark')">
-            <div class="tool-icon">🔆</div>
-            <div class="tool-name">EKRAN CIEMNY</div>
-        </div>
-        <div class="tool-card" onclick="showFix('battery')">
-            <div class="tool-icon">🔋</div>
-            <div class="tool-name">BATERIA PADA</div>
-        </div>
-        <div class="tool-card" onclick="showFix('font')">
-            <div class="tool-icon">🔍</div>
-            <div class="tool-name">MAŁE LITERY</div>
-        </div>
-        <div class="tool-card" onclick="showFix('restart')">
-            <div class="tool-icon">🔄</div>
-            <div class="tool-name">ZAWIESIŁ SIĘ</div>
-        </div>
-        <div class="tool-card" onclick="showFix('camera')">
-            <div class="tool-icon">📸</div>
-            <div class="tool-name">ZŁE ZDJĘCIA</div>
-        </div>
+        <div class="tool-card" onclick="showFix('audio')"><span>🔊</span><b>Dźwięk</b></div>
+        <div class="tool-card" onclick="showFix('internet')"><span>🌐</span><b>Internet</b></div>
+        <div class="tool-card" onclick="showFix('dark')"><span>🔆</span><b>Jasność</b></div>
+        <div class="tool-card" onclick="showFix('battery')"><span>🔋</span><b>Bateria</b></div>
+        <div class="tool-card" onclick="showFix('font')"><span>🔍</span><b>Litery</b></div>
+        <div class="tool-card" onclick="showFix('camera')"><span>📸</span><b>Aparat</b></div>
+        <div class="tool-card" onclick="showFix('whatsapp')"><span>💬</span><b>WhatsApp</b></div>
+        <div class="tool-card" onclick="showFix('restart')"><span>🔄</span><b>Zacięcie</b></div>
     </div>
 
-    <div class="ai-zone">
-        <h2 style="color: var(--ai-color); margin-bottom: 10px;">🤖 ASYSTENT POMOCNIK</h2>
-        <input type="text" id="ai-input" class="ai-input" placeholder="Opisz problem (np. brak głosu)...">
-        <button class="ai-btn" onclick="askAI()">ZAPYTAJ ASYSTENTA</button>
-        <div id="ai-response">
-            <div id="ai-text"></div>
-        </div>
-    </div>
-
-    <a href="tel:112" class="emergency-btn">POMOC RATUNKOWA (112)</a>
+    <a href="tel:112" style="background:#ef4444; color:white; display:block; padding:15px; border-radius:20px; text-decoration:none; font-weight:bold; margin-bottom: 20px;">POMOC RATUNKOWA (112)</a>
 
     <div id="fix-overlay">
-        <div class="fix-content">
-            <h2 id="fix-title" style="color: var(--primary);">Tytuł</h2>
+        <div class="fix-box">
+            <h2 id="fix-title" style="color:var(--primary)"></h2>
             <div id="fix-steps"></div>
-            <button class="btn-close" onclick="closeFix()">JUŻ DZIAŁA, DZIĘKUJĘ!</button>
+            <button class="close-btn" onclick="closeFix()">ROZWIĄZANE!</button>
         </div>
     </div>
 
     <script>
         const solutions = {
-            audio: {
-                t: "Problem z dźwiękiem",
-                s: ["Naciśnij GÓRNY przycisk z boku obudowy kilka razy.", "Sprawdź, czy na ekranie nie widać ikony przekreślonego głośnika.", "Jeśli masz podłączone słuchawki – odłącz je."]
-            },
-            internet: {
-                t: "Brak internetu",
-                s: ["Przesuń palcem z góry ekranu w dół.", "Sprawdź czy ikonka SAMOLOTU jest wyłączona.", "Sprawdź czy ikonka WIFI (łuki) jest niebieska."]
-            },
-            dark: {
-                t: "Ciemny ekran",
-                s: ["Przesuń palcem z góry ekranu w dół.", "Znajdź pasek ze słońcem i przesuń go w prawą stronę."]
-            },
-            battery: {
-                t: "Bateria ucieka",
-                s: ["Zmniejsz jasność ekranu.", "Wyłącz nieużywane aplikacje.", "Podłącz telefon do ładowarki."]
-            },
-            font: {
-                t: "Litery są za małe",
-                s: ["Wejdź w Ustawienia (koło zębate).", "Znajdź 'Wyświetlacz' lub 'Ekran'.", "Zmień 'Rozmiar czcionki' na największy."]
-            },
-            restart: {
-                t: "Telefon się zawiesił",
-                s: ["Przytrzymaj boczny przycisk włączania przez 15 sekund.", "Wybierz 'Uruchom ponownie'."]
-            },
-            camera: {
-                t: "Aparat / Zdjęcia",
-                s: ["Przetrzyj obiektyw z tyłu telefonu szmatką.", "Upewnij się, że palec nie zasłania oczka aparatu."]
-            }
+            audio: { t: "Głośność", s: ["Naciśnij GÓRNY przycisk z boku telefonu.", "Sprawdź czy nie masz wyciszonego dzwonka w menu na górze."] },
+            internet: { t: "Internet", s: ["Sprawdź czy ikonka WiFi (łuki) jest niebieska.", "Wyłącz i włącz telefon – to najczęstsza pomoc."] },
+            dark: { t: "Ekran", s: ["Przesuń palcem z góry ekranu w dół.", "Przesuń pasek ze słońcem w prawo."] },
+            battery: { t: "Bateria", s: ["Podłącz kabel ładowarki.", "Wyłącz nieużywane programy.", "Zmniejsz jasność ekranu."] },
+            font: { t: "Wielkość liter", s: ["Wejdź w Ustawienia -> Wyświetlacz.", "Wybierz 'Rozmiar czcionki' i przesuń suwak."] },
+            camera: { t: "Aparat", s: ["Przetrzyj obiektyw szmatką.", "Upewnij się, że masz miejsce na zdjęcia w telefonie."] },
+            whatsapp: { t: "WhatsApp / Wiadomości", s: ["Sprawdź czy masz połączenie z internetem.", "Upewnij się, że nie masz włączonego trybu samolotowego."] },
+            restart: { t: "Reset", s: ["Trzymaj boczny przycisk przez 15 sekund.", "Wybierz 'Uruchom ponownie'."] }
         };
 
         function showFix(id) {
-            const data = solutions[id];
-            document.getElementById('fix-title').innerText = data.t;
-            let html = "";
-            data.s.forEach((step, index) => {
-                html += `<div class="step-box">KROK ${index + 1}: ${step}</div>`;
-            });
-            document.getElementById('fix-steps').innerHTML = html;
+            const d = solutions[id];
+            document.getElementById('fix-title').innerText = d.t;
+            document.getElementById('fix-steps').innerHTML = d.s.map((step, i) => `<div class="step"><b>Krok ${i+1}:</b> ${step}</div>`).join('');
             document.getElementById('fix-overlay').style.display = 'block';
         }
 
-        function closeFix() {
-            document.getElementById('fix-overlay').style.display = 'none';
-        }
+        function closeFix() { document.getElementById('fix-overlay').style.display = 'none'; }
 
         function askAI() {
-            const input = document.getElementById('ai-input').value.toLowerCase();
-            const responseBox = document.getElementById('ai-response');
-            const responseText = document.getElementById('ai-text');
-            let answer = "🤖 Nie jestem pewien, jak pomóc. Spróbuj kliknąć jedną z ikon powyżej lub napisz np. 'dźwięk'.";
+            const q = document.getElementById('ai-input').value.toLowerCase();
+            if(!q) return;
+            
+            const win = document.getElementById('chat-window');
+            win.innerHTML += `<div class="bubble" style="align-self: flex-end; background: #e2e8f0;">${q}</div>`;
+            
+            let a = "🤖 Nie rozumiem pytania. Spróbuj napisać krócej, np. 'zdjęcia', 'latarka' lub 'internet'.";
 
-            if (input.includes("dźwięk") || input.includes("głos") || input.includes("słyszę")) {
-                answer = "🤖 Spróbuj podgłośnić telefon przyciskiem z boku obudowy. Sprawdź też, czy głośnik nie jest zakryty.";
-            } else if (input.includes("internet") || input.includes("wifi")) {
-                answer = "🤖 Sprawdź, czy ikonka Wi-Fi na górze ekranu jest włączona. Możesz też spróbować wyłączyć i włączyć telefon.";
-            } else if (input.includes("jasn") || input.includes("ciemn") || input.includes("widzę")) {
-                answer = "🤖 Poszukaj suwaka ze słońcem w menu na górze ekranu i przesuń go w prawo.";
-            } else if (input.includes("cześć") || input.includes("dzień dobry")) {
-                answer = "🤖 Dzień dobry! W czym mogę Ci dzisiaj pomóc?";
-            }
+            if(q.includes("zdjęc") || q.includes("fot") || q.includes("aparat")) a = "🤖 Aby zrobić zdjęcie, otwórz aplikację z ikoną APARATU i naciśnij białe kółko na dole.";
+            else if(q.includes("latark")) a = "🤖 Przesuń palcem z samej góry ekranu w dół i kliknij ikonę LATARKI (wygląda jak mała pochodnia).";
+            else if(q.includes("głośn") || q.includes("czyta")) a = "🤖 Możesz włączyć funkcję 'TalkBack' w ustawieniach ułatwień dostępu, ale najlepiej poprosić kogoś bliskiego o pomoc w konfiguracji.";
+            else if(q.includes("sklep") || q.includes("aplikacj")) a = "🤖 Nowe programy pobierasz w SKLEPIE PLAY. Wpisz nazwę programu w wyszukiwarkę na górze sklepu.";
+            else if(q.includes("wnuc") || q.includes("syn") || q.includes("córk")) a = "🤖 Pamiętaj, że rodzina zawsze chętnie Ci pomoże! Może zadzwoń do nich teraz?";
+            else if(q.includes("dźwięk") || q.includes("słysz")) a = "🤖 Sprawdź przyciski z boku telefonu. Jeśli nie słyszysz rozmówcy, sprawdź czy nic nie zasłania głośnika u góry.";
 
-            responseText.innerText = answer;
-            responseBox.style.display = 'block';
+            setTimeout(() => {
+                win.innerHTML += `<div class="bubble bot">${a}</div>`;
+                win.scrollTop = win.scrollHeight;
+            }, 500);
+            
+            document.getElementById('ai-input').value = "";
         }
     </script>
 </body>
