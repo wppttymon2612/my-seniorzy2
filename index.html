@@ -287,21 +287,52 @@
 
     document.getElementById('today-info').innerText = fixTxt(new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }));
 
-    async function fetchYouTube(chan) {
-        try {
-            const url = `https://www.googleapis.com/youtube/v3/search?key=${MOJ_KLUCZ_API}&channelId=${chan.id}&part=snippet,id&order=date&maxResults=2&type=video`;
-            const res = await fetch(url);
-            const data = await res.json();
-            if(!data.items) return [];
-            return data.items.map(item => ({
-                tytul: fixTxt(item.snippet.title),
-                vid: item.id.videoId,
-                tag: chan.tag,
-                autor: chan.n,
-                isV: true
-            })).filter(v => v.vid);
-        } catch (e) { return []; }
+    // --- ZMODYFIKOWANA FUNKCJA fetchYouTube ---
+
+async function fetchYouTube(chan) {
+    const cacheKey = 'yt_cache_' + chan.id;
+    const cached = localStorage.getItem(cacheKey);
+    const now = new Date().getTime();
+
+    // Sprawdź, czy mamy świeże dane (sprzed mniej niż 2 godzin)
+    if (cached) {
+        const parsed = JSON.parse(cached);
+        if (now - parsed.time < 2 * 60 * 60 * 1000) { 
+            console.log("Ładowanie z pamięci (Cache) dla: " + chan.n);
+            return parsed.data; 
+        }
     }
+
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${MOJ_KLUCZ_API}&channelId=${chan.id}&part=snippet,id&order=date&maxResults=2&type=video`;
+        const res = await fetch(url);
+        
+        // Jeśli Google powie "NIE" (403), używamy starych danych z pamięci niezależnie od czasu
+        if (res.status === 403 && cached) {
+            console.warn("Limit API wyczerpany. Używam starych danych dla: " + chan.n);
+            return JSON.parse(cached).data;
+        }
+
+        const data = await res.json();
+        if(!data.items) return [];
+
+        const videos = data.items.map(item => ({
+            tytul: fixTxt(item.snippet.title),
+            vid: item.id.videoId,
+            tag: chan.tag,
+            autor: chan.n,
+            isV: true
+        })).filter(v => v.vid);
+
+        // Zapisz nowe dane do pamięci na 2 godziny
+        localStorage.setItem(cacheKey, JSON.stringify({time: now, data: videos}));
+        
+        return videos;
+    } catch (e) { 
+        // W razie błędu sieci, też spróbuj pokazać cokolwiek z pamięci
+        return cached ? JSON.parse(cached).data : []; 
+    }
+}
 
     async function szukajMiasta() {
         let m = document.getElementById('city-input').value;
