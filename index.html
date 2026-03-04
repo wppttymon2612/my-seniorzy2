@@ -324,57 +324,53 @@
     document.getElementById('today-info').innerText = fixTxt(new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }));
 
     async function fetchYouTube(chan) {
-        const cacheKey = 'yt_cache_' + chan.id;
-        const cached = localStorage.getItem(cacheKey);
-        const now = new Date().getTime();
+    const cacheKey = 'yt_cache_' + chan.id;
+    const cached = localStorage.getItem(cacheKey);
+    const now = new Date().getTime();
 
-        if (cached) {
-            const parsed = JSON.parse(cached);
-            if (now - parsed.time < 2 * 60 * 60 * 1000) { 
-                return parsed.data; 
-            }
-        }
-
-        try {
-            const url = `https://www.googleapis.com/youtube/v3/search?key=${MOJ_KLUCZ_API}&channelId=${chan.id}&part=snippet,id&order=date&maxResults=2&type=video`;
-            const res = await fetch(url);
-            
-            if (res.status === 403 && cached) {
-                return JSON.parse(cached).data;
-            }
-
-            const data = await res.json();
-            if(!data.items) return [];
-
-            const videos = data.items.map(item => ({
-                tytul: fixTxt(item.snippet.title),
-                vid: item.id.videoId,
-                tag: chan.tag,
-                autor: chan.n,
-                isV: true
-            })).filter(v => v.vid);
-
-            localStorage.setItem(cacheKey, JSON.stringify({time: now, data: videos}));
-            return videos;
-        } catch (e) { 
-            return cached ? JSON.parse(cached).data : []; 
+    // 1. Sprawdź Cache (pamięć podręczną)
+    if (cached) {
+        const parsed = JSON.parse(cached);
+        if (now - parsed.time < 2 * 60 * 60 * 1000) { 
+            return parsed.data; 
         }
     }
 
-    async function szukajMiasta() {
-        let m = document.getElementById('city-input').value;
-        if(!m) return;
-        try {
-            const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(m)}`;
-            const res = await fetch(proxy + encodeURIComponent(geoUrl));
-            const data = await res.json();
-            if(data && data.length > 0) {
-                localStorage.setItem('mojeMiasto', JSON.stringify({ n: m, lat: data[0].lat, lon: data[0].lon }));
-                location.reload();
-            }
-        } catch (e) { alert("Blad połączenia."); }
-    }
+    try {
+        // SZTUCZKA: Zamieniamy UC na UU w ID kanału, aby dostać się do listy "Uploads"
+        const uploadsPlaylistId = chan.id.replace(/^UC/, 'UU');
+        
+        // Używamy metody 'playlistItems', która kosztuje tylko 1 jednostkę Quoty!
+        const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${MOJ_KLUCZ_API}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=2`;
+        
+        const res = await fetch(url);
+        
+        // Obsługa limitu 403 (jeśli jednak braknie punktów)
+        if (res.status === 403 && cached) {
+            return JSON.parse(cached).data;
+        }
 
+        const data = await res.json();
+        if(!data.items) return [];
+
+        // Mapujemy dane (struktura playlistItems jest odrobinę inna niż search)
+        const videos = data.items.map(item => ({
+            tytul: fixTxt(item.snippet.title),
+            vid: item.snippet.resourceId.videoId, // Tutaj jest inna ścieżka do ID filmu
+            tag: chan.tag,
+            autor: chan.n,
+            isV: true
+        })).filter(v => v.vid);
+
+        // Zapisz do Cache
+        localStorage.setItem(cacheKey, JSON.stringify({time: now, data: videos}));
+        return videos;
+        
+    } catch (e) { 
+        console.error("Błąd YouTube:", e);
+        return cached ? JSON.parse(cached).data : []; 
+    }
+}
     async function fetchTemp(m, container, isUser = false) {
         try {
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${m.lat}&longitude=${m.lon}&current_weather=true`);
