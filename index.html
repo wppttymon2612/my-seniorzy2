@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Seniorzy</title>
+    <title>Centrum Seniora</title>
     <style>
     :root {
         --primary: #1e3a8a;
@@ -11,6 +11,10 @@
         --bg: #f1f5f9;
         --text: #1e293b;
         --white: #ffffff;
+        --secondary: #4f46e5;
+        --ai-bubble: #dbeafe;
+        --step-bg: #f0fdf4;
+        --tab-h: 80px;
     }
 
     body.dark-mode {
@@ -19,24 +23,22 @@
         --text: #f1f5f9;
         --primary: #3b82f6;
         --accent: #60a5fa;
+        --ai-bubble: #1e3a8a;
+        --step-bg: #14532d;
     }
 
-    * { 
-        margin: 0; 
-        padding: 0; 
-        box-sizing: border-box; 
-        -webkit-tap-highlight-color: transparent; 
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    body { 
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-        background: var(--bg); 
-        color: var(--text); 
+    body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
         line-height: 1.6;
         transition: background 0.3s, color 0.3s;
+        padding-bottom: var(--tab-h);
     }
 
-    /* --- NOWOŚĆ: EKRAN STARTOWY (SPLASH SCREEN) --- */
+    /* ===== SPLASH SCREEN ===== */
     #splash-screen {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -50,61 +52,84 @@
         transition: opacity 0.6s ease;
     }
     .splash-logo {
-        font-size: 38px;
+        font-size: 36px;
         font-weight: 900;
         letter-spacing: 3px;
-        margin-bottom: 25px;
+        margin-bottom: 8px;
         text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         animation: pulse 2s infinite ease-in-out;
     }
+    .splash-sub {
+        font-size: 14px;
+        opacity: 0.8;
+        font-weight: 600;
+        letter-spacing: 2px;
+        margin-bottom: 35px;
+    }
     .splash-spinner {
-        width: 50px;
-        height: 50px;
+        width: 50px; height: 50px;
         border: 6px solid rgba(255,255,255,0.2);
         border-top: 6px solid white;
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
+    .splash-msg { margin-top: 20px; font-weight: 700; opacity: 0.8; font-size: 14px; letter-spacing: 1px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    /* --- KONIEC NOWOŚCI --- */
 
-    .header-top { 
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); 
-        padding: 50px 20px; 
-        text-align: center; 
-        border-bottom-left-radius: 50px; 
-        border-bottom-right-radius: 50px; 
-        color: white; 
-        box-shadow: 0 10px 30px rgba(30,58,138,0.3);
+    /* ===== DOLNY PASEK ZAKŁADEK ===== */
+    #tab-bar {
+        position: fixed;
+        bottom: 0; left: 0; width: 100%;
+        height: var(--tab-h);
+        background: var(--white);
+        display: flex;
+        z-index: 5000;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+        border-top: 2px solid rgba(0,0,0,0.06);
+        transition: background 0.3s;
     }
-    .header-top h1 { 
-        font-size: 36px; 
-        text-transform: uppercase; 
-        font-weight: 900; 
-        letter-spacing: 3px; 
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    .tab-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
     }
-    .header-top p { 
-        font-size: 17px; 
-        opacity: 0.95; 
-        margin-top: 10px; 
-        font-weight: 500;
-        letter-spacing: 1px;
+    .tab-btn:active { background: rgba(0,0,0,0.05); }
+    .tab-btn .tab-icon { font-size: 30px; line-height: 1; }
+    .tab-btn .tab-label { font-size: 13px; font-weight: 800; color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase; transition: color 0.2s; }
+    .tab-btn.active .tab-label { color: var(--primary); }
+    .tab-btn.active::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 15%; width: 70%;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 0 0 8px 8px;
     }
 
+    /* ===== MODUŁY ===== */
+    .module { display: none; }
+    .module.active { display: block; }
+
+    /* ===== DARK MODE TOGGLE ===== */
     .dark-mode-toggle {
         position: fixed;
-        top: 15px;
-        right: 15px;
+        top: 15px; right: 15px;
         z-index: 2000;
         background: rgba(255,255,255,0.2);
         border: none;
         color: white;
         padding: 10px;
         border-radius: 50%;
-        width: 45px;
-        height: 45px;
+        width: 45px; height: 45px;
         cursor: pointer;
         font-size: 20px;
         backdrop-filter: blur(5px);
@@ -114,182 +139,208 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
+    /* ===== GAZETA ===== */
+    .header-top {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 50px 20px;
+        text-align: center;
+        border-bottom-left-radius: 50px;
+        border-bottom-right-radius: 50px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(30,58,138,0.3);
+    }
+    .header-top h1 {
+        font-size: 36px;
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .header-top p { font-size: 17px; opacity: 0.95; margin-top: 10px; font-weight: 500; letter-spacing: 1px; }
+
     #city-search-box {
-        display: none; 
-        padding: 20px; 
-        background: var(--white); 
-        margin: -25px 30px 20px 30px; 
-        border-radius: 30px; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+        display: none;
+        padding: 20px;
+        background: var(--white);
+        margin: -25px 30px 20px 30px;
+        border-radius: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         text-align: center;
         position: relative;
         z-index: 10;
     }
-    #city-input { 
-        width: 70%; 
-        padding: 14px 20px; 
-        border-radius: 15px; 
-        border: 2px solid #e2e8f0; 
-        font-size: 16px; 
-        outline: none;
-        background: var(--white);
-        color: var(--text);
+    #city-input {
+        width: 70%; padding: 14px 20px; border-radius: 15px;
+        border: 2px solid #e2e8f0; font-size: 16px; outline: none;
+        background: var(--white); color: var(--text);
     }
-    #city-search-btn { 
-        width: 25%; 
-        padding: 14px; 
-        border-radius: 15px; 
-        background: var(--primary); 
-        color: white; 
-        border: none; 
-        font-weight: 900; 
-        margin-left: 5px;
-        cursor: pointer;
+    #city-search-btn {
+        width: 25%; padding: 14px; border-radius: 15px;
+        background: var(--primary); color: white; border: none;
+        font-weight: 900; margin-left: 5px; cursor: pointer;
     }
 
     .weather-section { padding: 30px 0 10px 0; }
-    .tv-scroll { 
-        display: flex; 
-        overflow-x: auto; 
-        gap: 20px; 
-        padding: 10px 25px; 
-        scrollbar-width: none; 
+    .tv-scroll {
+        display: flex; overflow-x: auto; gap: 20px;
+        padding: 10px 25px; scrollbar-width: none;
     }
     .tv-scroll::-webkit-scrollbar { display: none; }
-    
-    .tv-card { 
-        min-width: 145px; 
-        background: var(--white); 
-        padding: 22px; 
-        border-radius: 30px; 
-        box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
-        text-align: center; 
-        border: 1px solid rgba(0,0,0,0.05);
+    .tv-card {
+        min-width: 145px; background: var(--white); padding: 22px;
+        border-radius: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        text-align: center; border: 1px solid rgba(0,0,0,0.05);
         transition: transform 0.2s, background 0.3s;
     }
-    .tv-card.user-city { 
-        border: 3px solid var(--accent); 
-        background: var(--white); 
-        transform: scale(1.05);
-    }
-    
+    .tv-card.user-city { border: 3px solid var(--accent); transform: scale(1.05); }
     .add-city-btn {
-        min-width: 110px; 
-        background: var(--white); 
-        border-radius: 30px; 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center;
-        cursor: pointer; 
-        border: 3px dashed #cbd5e1; 
-        color: #64748b; 
-        font-weight: 800;
+        min-width: 110px; background: var(--white); border-radius: 30px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        cursor: pointer; border: 3px dashed #cbd5e1; color: #64748b; font-weight: 800;
+        padding: 22px 10px; min-height: 95px;
     }
-
     .tv-name { font-weight: 800; color: var(--primary); font-size: 13px; margin-bottom: 8px; text-transform: uppercase; }
     .tv-item { font-size: 26px; font-weight: 900; color: #ef4444; }
 
-    .filter-nav { 
-        display: flex; 
-        overflow-x: auto; 
-        padding: 20px; 
-        gap: 12px; 
-        position: sticky; 
-        top: 0; 
-        background: var(--bg); 
-        backdrop-filter: blur(15px); 
-        z-index: 100;
-        transition: background 0.3s;
+    .filter-nav {
+        display: flex; overflow-x: auto; padding: 20px; gap: 12px;
+        position: sticky; top: 0; background: var(--bg);
+        backdrop-filter: blur(15px); z-index: 100; transition: background 0.3s;
+        scrollbar-width: none;
     }
-    .f-btn { 
-        background: var(--white); 
-        border: none; 
-        padding: 12px 25px; 
-        border-radius: 50px; 
-        font-weight: 700; 
-        font-size: 14px; 
-        white-space: nowrap; 
-        transition: 0.3s; 
-        color: #64748b;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    .filter-nav::-webkit-scrollbar { display: none; }
+    .f-btn {
+        background: var(--white); border: none; padding: 12px 25px;
+        border-radius: 50px; font-weight: 700; font-size: 14px;
+        white-space: nowrap; transition: 0.3s; color: #64748b;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
     }
-    .f-btn.active { 
-        background: var(--primary); 
-        color: white; 
-        box-shadow: 0 8px 20px rgba(30,58,138,0.3); 
-    }
+    .f-btn.active { background: var(--primary); color: white; box-shadow: 0 8px 20px rgba(30,58,138,0.3); }
 
-    .card { 
-        background: var(--white); 
-        margin: 25px; 
-        border-radius: 40px; 
-        overflow: hidden; 
-        box-shadow: 0 15px 35px rgba(0,0,0,0.08); 
-        border: 1px solid rgba(255,255,255,0.1);
-        transition: transform 0.2s, background 0.3s;
+    .card {
+        background: var(--white); margin: 25px; border-radius: 40px;
+        overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        border: 1px solid rgba(255,255,255,0.1); transition: transform 0.2s, background 0.3s;
+        cursor: pointer;
     }
     .card:active { transform: scale(0.98); }
     .card img { width: 100%; height: 250px; object-fit: cover; }
-    
     .video-box { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
     .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
     .card-body { padding: 30px; }
-    .tag { 
-        display: inline-block; 
-        background: #dbeafe; 
-        color: var(--accent); 
-        font-size: 12px; 
-        font-weight: 800; 
-        padding: 8px 16px; 
-        border-radius: 15px; 
-        text-transform: uppercase; 
-        margin-bottom: 15px; 
+    .tag {
+        display: inline-block; background: #dbeafe; color: var(--accent);
+        font-size: 12px; font-weight: 800; padding: 8px 16px;
+        border-radius: 15px; text-transform: uppercase; margin-bottom: 15px;
     }
     body.dark-mode .tag { background: #1e3a8a; color: #93c5fd; }
-    
-    .news-title { 
-        font-size: 22px; 
-        font-weight: 800; 
-        color: var(--text); 
-        line-height: 1.35; 
-    }
+    .news-title { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.35; }
 
-    .back-bar { 
-        display: none; 
-        width: 90%; 
-        padding: 24px; 
-        background: #f59e0b; 
-        color: white; 
-        font-weight: 900; 
-        border: none; 
-        position: fixed; 
-        bottom: 30px; 
-        left: 5%; 
-        z-index: 1000; 
-        border-radius: 40px; 
-        box-shadow: 0 20px 40px rgba(245,158,11,0.4); 
-        font-size: 18px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+    .back-bar {
+        display: none; width: 90%; padding: 24px;
+        background: #f59e0b; color: white; font-weight: 900;
+        border: none; position: fixed; bottom: calc(var(--tab-h) + 15px);
+        left: 5%; z-index: 4000; border-radius: 40px;
+        box-shadow: 0 20px 40px rgba(245,158,11,0.4);
+        font-size: 18px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
     }
 
     .loader { text-align: center; padding: 80px; font-weight: 800; color: var(--primary); font-size: 16px; letter-spacing: 1px; }
-</style>
+
+    /* ===== POGOTOWIE CYFROWE ===== */
+    .pog-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        padding: 50px 20px 40px 20px;
+        text-align: center;
+        border-bottom-left-radius: 50px;
+        border-bottom-right-radius: 50px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(79,70,229,0.35);
+    }
+    .pog-header h1 { font-size: 30px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+    .pog-header p { font-size: 17px; opacity: 0.9; margin-top: 10px; font-weight: 500; }
+
+    .ai-container {
+        background: var(--white); border-radius: 30px; padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 2px solid var(--secondary); margin: 25px;
+        transition: background 0.3s;
+    }
+    .chat-window {
+        height: 200px; overflow-y: auto; margin-bottom: 15px;
+        padding: 10px; display: flex; flex-direction: column; gap: 12px;
+        border-bottom: 1px solid #eee;
+    }
+    .bubble { padding: 14px 20px; border-radius: 22px; max-width: 85%; font-size: 16px; font-weight: 500; }
+    .bubble.bot { background: var(--ai-bubble); color: var(--primary); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .bubble.user { background: #e2e8f0; align-self: flex-end; border-bottom-right-radius: 4px; }
+    body.dark-mode .bubble.user { background: #334155; color: var(--text); }
+    .chat-controls { display: flex; gap: 10px; }
+    .chat-input {
+        flex: 1; padding: 16px; border-radius: 18px;
+        border: 2px solid #cbd5e1; font-size: 16px; outline: none;
+        background: var(--white); color: var(--text);
+    }
+    .chat-send {
+        background: var(--secondary); color: white; border: none;
+        padding: 16px 25px; border-radius: 18px; font-weight: 900;
+        font-size: 16px; cursor: pointer;
+    }
+
+    .pog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 0 20px 25px 20px; }
+    .tool-card {
+        background: var(--white); padding: 22px 10px; border-radius: 25px;
+        border: 2px solid #e2e8f0; text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.2s; cursor: pointer;
+    }
+    .tool-card:active { transform: scale(0.96); }
+    .tool-card span { font-size: 45px; display: block; margin-bottom: 10px; }
+    .tool-card b { font-size: 15px; color: var(--primary); display: block; line-height: 1.2; font-weight: 800; }
+
+    #fix-overlay {
+        display: none; position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%; background: rgba(0,0,0,0.75);
+        z-index: 6000; padding: 20px; box-sizing: border-box;
+        overflow-y: auto;
+    }
+    .fix-box {
+        background: white; padding: 30px; border-radius: 40px;
+        max-height: 82vh; overflow-y: auto;
+        box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        position: relative; top: 5%; margin: 0 auto;
+        max-width: 600px;
+    }
+    body.dark-mode .fix-box { background: #1e293b; }
+    .step {
+        background: var(--step-bg); padding: 20px; margin: 15px 0;
+        border-radius: 20px; border-left: 8px solid #22c55e;
+        text-align: left; font-size: 18px; font-weight: 600; color: var(--text);
+    }
+    .close-btn {
+        background: var(--primary); color: white; width: 100%;
+        padding: 20px; border-radius: 25px; border: none;
+        font-size: 20px; font-weight: 900; margin-top: 10px; cursor: pointer;
+    }
+    </style>
 </head>
 <body>
 
+<!-- SPLASH SCREEN -->
 <div id="splash-screen">
-    <div class="splash-logo">MY SENIORZY</div>
+    <div class="splash-logo">CENTRUM SENIORA</div>
+    <div class="splash-sub">TWÓJ CYFROWY TOWARZYSZ</div>
     <div class="splash-spinner"></div>
-    <p style="margin-top:20px; font-weight:700; opacity:0.8;">OTWIERAMY GAZETĘ...</p>
+    <p class="splash-msg">OTWIERAMY GAZETĘ...</p>
 </div>
 
+<!-- DARK MODE BUTTON -->
 <button class="dark-mode-toggle" onclick="toggleDarkMode()" id="dark-btn">🌙</button>
-<button id="btn-back" class="back-bar" onclick="zamknijNews()"> POWRÓT DO GAZETY </button>
 
-<div id="ui-main">
+<!-- PRZYCISK POWRÓT -->
+<button id="btn-back" class="back-bar" onclick="zamknijNews()">⬅ POWRÓT DO GAZETY</button>
+
+<!-- ===== MODUŁ 1: GAZETA ===== -->
+<div id="module-gazeta" class="module active">
     <div class="header-top">
         <h1>MY SENIORZY</h1>
         <p id="today-info"></p>
@@ -311,18 +362,67 @@
         <button class="f-btn" onclick="filtruj('KUCHNIA', this)">PRZEPISY</button>
         <button class="f-btn" onclick="filtruj('GWIAZDY', this)">GWIAZDY</button>
         <button class="f-btn" onclick="filtruj('ZDROWE', this)">ZDROWIE</button>
-        <button class="f-btn" onclick="filtruj('PIENIADZE', this)">PIENIADZE</button>
-        <button class="f-btn" onclick="filtruj('OGROD', this)">OGROD</button>
+        <button class="f-btn" onclick="filtruj('PIENIADZE', this)">PIENIĄDZE</button>
+        <button class="f-btn" onclick="filtruj('OGROD', this)">OGRÓD</button>
     </div>
 
     <div id="loader" class="loader" style="display:none;">Wczytywanie...</div>
     <div id="feed"></div>
 </div>
 
+<!-- ===== MODUŁ 2: POGOTOWIE CYFROWE ===== -->
+<div id="module-pogotowie" class="module">
+    <div class="pog-header">
+        <h1>🛠️ Pogotowie Cyfrowe</h1>
+        <p>Pomogę Ci naprawić Twój telefon</p>
+    </div>
+
+    <div class="ai-container">
+        <div class="chat-window" id="chat-window">
+            <div class="bubble bot">Dzień dobry! Napisz mi, co się stało (np. "jak wysłać zdjęcie?"), a ja Cię poprowadzę.</div>
+        </div>
+        <div class="chat-controls">
+            <input type="text" id="ai-input" class="chat-input" placeholder="W czym pomóc?" onkeydown="if(event.key==='Enter') askAI()">
+            <button class="chat-send" onclick="askAI()">OK</button>
+        </div>
+    </div>
+
+    <div class="pog-grid">
+        <div class="tool-card" onclick="showFix('audio')"><span>🔊</span><b>Nic nie słyszę</b></div>
+        <div class="tool-card" onclick="showFix('internet')"><span>🌐</span><b>Nie mam internetu</b></div>
+        <div class="tool-card" onclick="showFix('dark')"><span>🔆</span><b>Ekran jest za ciemny</b></div>
+        <div class="tool-card" onclick="showFix('battery')"><span>🔋</span><b>Bateria szybko pada</b></div>
+        <div class="tool-card" onclick="showFix('font')"><span>🔍</span><b>Litery są za małe</b></div>
+        <div class="tool-card" onclick="showFix('camera')"><span>📸</span><b>Zdjęcia są niewyraźne</b></div>
+        <div class="tool-card" onclick="showFix('whatsapp')"><span>💬</span><b>Nie działa WhatsApp</b></div>
+        <div class="tool-card" onclick="showFix('restart')"><span>🔄</span><b>Telefon się zaciął</b></div>
+    </div>
+</div>
+
+<!-- OVERLAY NAPRAWY -->
+<div id="fix-overlay">
+    <div class="fix-box">
+        <h2 id="fix-title" style="color:var(--primary); text-align:center; margin-bottom:10px;"></h2>
+        <div id="fix-steps"></div>
+        <button class="close-btn" onclick="closeFix()">✅ JUŻ DZIAŁA, DZIĘKUJĘ!</button>
+    </div>
+</div>
+
+<!-- ===== DOLNY PASEK ZAKŁADEK ===== -->
+<div id="tab-bar">
+    <button class="tab-btn active" id="tab-gazeta" onclick="switchTab('gazeta')">
+        <span class="tab-icon">📰</span>
+        <span class="tab-label">Gazeta</span>
+    </button>
+    <button class="tab-btn" id="tab-pogotowie" onclick="switchTab('pogotowie')">
+        <span class="tab-icon">🛠️</span>
+        <span class="tab-label">Pomoc</span>
+    </button>
+</div>
+
 <script>
     const MOJ_KLUCZ_API = "AIzaSyBzkWjiKuVIRkw29UuU-m19eesjho_LskM";
     const proxy = "https://corsproxy.io/?";
-
     let rawData = [];
 
     const ytChannels = [
@@ -352,16 +452,24 @@
 
     document.getElementById('today-info').innerText = fixTxt(new Date().toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' }));
 
+    // ===== NAWIGACJA ZAKŁADEK =====
+    function switchTab(name) {
+        document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('module-' + name).classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    // ===== YOUTUBE =====
     async function fetchYouTube(chan) {
         const cacheKey = 'yt_cache_' + chan.id;
         const cached = localStorage.getItem(cacheKey);
         const now = new Date().getTime();
-
         if (cached) {
             const parsed = JSON.parse(cached);
             if (now - parsed.time < 2 * 60 * 60 * 1000) return parsed.data;
         }
-
         try {
             const uploadsPlaylistId = chan.id.replace(/^UC/, 'UU');
             const url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${MOJ_KLUCZ_API}&playlistId=${uploadsPlaylistId}&part=snippet&maxResults=2`;
@@ -369,7 +477,6 @@
             if (res.status === 403 && cached) return JSON.parse(cached).data;
             const data = await res.json();
             if(!data.items) return [];
-
             const videos = data.items.map(item => ({
                 tytul: fixTxt(item.snippet.title),
                 vid: item.snippet.resourceId.videoId,
@@ -377,16 +484,15 @@
                 autor: chan.n,
                 isV: true
             })).filter(v => v.vid);
-
             localStorage.setItem(cacheKey, JSON.stringify({time: now, data: videos}));
             return videos;
         } catch (e) { return cached ? JSON.parse(cached).data : []; }
     }
 
+    // ===== POGODA =====
     async function szukajMiasta() {
         const miasto = document.getElementById('city-input').value;
         if(!miasto) return;
-        
         document.getElementById('city-search-btn').innerText = "...";
         try {
             const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(miasto)}&count=1&language=pl&format=json`);
@@ -428,6 +534,7 @@
         resContainer.appendChild(addBtn);
     }
 
+    // ===== INIT =====
     async function init() {
         initPogoda();
         let allItems = [];
@@ -448,20 +555,18 @@
                 });
             } catch (e) {}
         });
-
         const videoResults = await Promise.all(ytChannels.map(c => fetchYouTube(c)));
         videoResults.forEach(res => allItems.push(...res));
         await Promise.all(newsPromises);
         rawData = allItems.sort(() => Math.random() - 0.5);
-        
         render(rawData);
 
-        // NOWOŚĆ: Ukrywanie Splash Screen po załadowaniu wszystkiego
         const splash = document.getElementById('splash-screen');
         splash.style.opacity = '0';
         setTimeout(() => { splash.style.display = 'none'; }, 600);
     }
 
+    // ===== RENDER =====
     function render(list) {
         const c = document.getElementById('feed');
         c.innerHTML = "";
@@ -470,7 +575,7 @@
             d.className = 'card';
             if(item.isV) {
                 d.innerHTML = `<div class="video-box">
-                    <iframe src="https://www.youtube.com/embed/${item.vid}" allowfullscreen></iframe>
+                    <iframe src="https://www.youtube.com/embed/${item.vid}" allowfullscreen loading="lazy"></iframe>
                 </div>
                 <div class="card-body">
                     <span class="tag">${item.autor || item.tag}</span>
@@ -478,7 +583,7 @@
                 </div>`;
             } else {
                 d.onclick = () => {
-                    document.getElementById('ui-main').style.display = 'none';
+                    document.getElementById('module-gazeta').style.display = 'none';
                     document.getElementById('btn-back').style.display = 'block';
                     const newsCont = document.createElement('div');
                     newsCont.id = "news-container";
@@ -488,7 +593,7 @@
                     document.body.appendChild(newsCont);
                 };
                 const img = item.fotka || `https://picsum.photos/seed/${Math.random()}/400/230`;
-                d.innerHTML = `<img src="${img}"><div class="card-body"><span class="tag">${item.tag}</span><div class="news-title">${item.tytul}</div></div>`;
+                d.innerHTML = `<img src="${img}" loading="lazy"><div class="card-body"><span class="tag">${item.tag}</span><div class="news-title">${item.tytul}</div></div>`;
             }
             c.appendChild(d);
         });
@@ -497,7 +602,7 @@
     function zamknijNews() {
         const container = document.getElementById('news-container');
         if(container) container.remove();
-        document.getElementById('ui-main').style.display = 'block';
+        document.getElementById('module-gazeta').style.display = 'block';
         document.getElementById('btn-back').style.display = 'none';
         window.scrollTo(0,0);
     }
@@ -509,6 +614,7 @@
         else render(rawData.filter(x => x.tag === (kat === 'ZDROWIE' ? 'ZDROWE' : kat)));
     }
 
+    // ===== DARK MODE =====
     function toggleDarkMode() {
         const body = document.body;
         const btn = document.getElementById('dark-btn');
@@ -530,6 +636,113 @@
         }
     })();
 
+    // ===== POGOTOWIE CYFROWE =====
+    const solutions = {
+        audio: {
+            t: "Problem: Nic nie słyszę",
+            s: [
+                "Znajdź dwa przyciski z boku obudowy. Naciskaj ten GÓRNY, aż zobaczysz pasek na ekranie.",
+                "Przesuń palcem z samej góry ekranu w dół. Sprawdź, czy ikona głośnika nie jest przekreślona.",
+                "Upewnij się, że tryb 'Nie przeszkadzać' (ikona księżyca) jest wyłączony."
+            ]
+        },
+        internet: {
+            t: "Problem: Brak internetu",
+            s: [
+                "Przesuń palcem z góry ekranu w dół. Ikonka Wi-Fi (łuki) musi świecić na niebiesko.",
+                "Sprawdź, czy ikona samolotu jest szara (wyłączona).",
+                "Wyłącz telefon na 10 sekund i włącz go ponownie – to zazwyczaj pomaga."
+            ]
+        },
+        dark: {
+            t: "Problem: Ekran jest za ciemny",
+            s: [
+                "Przesuń palcem z góry ekranu dwa razy w dół. Poszukaj suwaka z ikoną słońca.",
+                "Przesuń kropkę na suwaku maksymalnie w prawą stronę.",
+                "Sprawdź, czy nie masz włączonego 'Oszczędzania energii' w menu na górze."
+            ]
+        },
+        battery: {
+            t: "Problem: Bateria szybko pada",
+            s: [
+                "Zmniejsz jasność ekranu (suwak ze słońcem).",
+                "Naciśnij przycisk z trzema kreskami na dole ekranu i wybierz 'Zamknij wszystko'.",
+                "Wyłącz Bluetooth i GPS (Lokalizację) w menu na górze, jeśli ich nie używasz."
+            ]
+        },
+        font: {
+            t: "Problem: Za małe litery",
+            s: [
+                "Otwórz 'Ustawienia' (ikona koła zębatego).",
+                "Kliknij w 'Wyświetlacz' lub 'Ekran'.",
+                "Wybierz 'Rozmiar czcionki' i przesuń suwak w prawo."
+            ]
+        },
+        camera: {
+            t: "Problem: Niewyraźne zdjęcia",
+            s: [
+                "Przetrzyj obiektyw z tyłu telefonu suchą szmatką lub koszulką.",
+                "Gdy robisz zdjęcie, kliknij palcem na osobę na ekranie, aby telefon złapał ostrość.",
+                "Trzymaj telefon nieruchomo przez sekundę po naciśnięciu przycisku zdjęcia."
+            ]
+        },
+        whatsapp: {
+            t: "Problem: WhatsApp nie działa",
+            s: [
+                "Upewnij się, że masz włączony internet (Wi-Fi lub Dane).",
+                "Sprawdź, czy nie masz do pobrania aktualizacji w Sklepie Play.",
+                "Uruchom telefon ponownie."
+            ]
+        },
+        restart: {
+            t: "Problem: Telefon się zaciął",
+            s: [
+                "Trzymaj boczny przycisk włączania przez pełne 15 sekund, aż ekran zgaśnie.",
+                "Poczekaj chwilę i włącz go normalnie.",
+                "Nie naciskaj wielu rzeczy na raz – telefon potrzebuje sekundy na reakcję."
+            ]
+        }
+    };
+
+    function showFix(id) {
+        const d = solutions[id];
+        document.getElementById('fix-title').innerText = d.t;
+        document.getElementById('fix-steps').innerHTML = d.s.map((step, i) =>
+            `<div class="step"><b>KROK ${i+1}:</b> ${step}</div>`
+        ).join('');
+        document.getElementById('fix-overlay').style.display = 'block';
+    }
+
+    function closeFix() { document.getElementById('fix-overlay').style.display = 'none'; }
+
+    function askAI() {
+        const inputEl = document.getElementById('ai-input');
+        const q = inputEl.value.toLowerCase().trim();
+        if(!q) return;
+        const win = document.getElementById('chat-window');
+        win.innerHTML += `<div class="bubble user">${inputEl.value}</div>`;
+
+        let a = "🤖 Nie rozumiem dokładnie. Napisz np. 'zdjęcie', 'mapa', 'youtube' lub 'latarka'.";
+
+        if(q.includes("zdję") || q.includes("zdjęc") || q.includes("fot")) a = "🤖 Otwórz aplikację Aparat i naciśnij duże białe kółko. Jeśli chcesz zobaczyć zdjęcia, kliknij w mały kwadracik obok kółka.";
+        else if(q.includes("map") || q.includes("droga") || q.includes("jechać")) a = "🤖 Otwórz aplikację 'Mapy Google', wpisz adres na górze i kliknij niebieski przycisk 'Start' lub 'Trasa'.";
+        else if(q.includes("sms") || q.includes("wiadom")) a = "🤖 Wejdź w ikonę niebieskiej chmurki (Wiadomości), wybierz kontakt i napisz tekst na dole, tam gdzie miga kreska.";
+        else if(q.includes("latark")) a = "🤖 Przesuń palcem z góry ekranu w dół i kliknij ikonę latarki. Jeśli jej nie widzisz, przesuń menu w lewo.";
+        else if(q.includes("filmy") || q.includes("youtube") || q.includes("oglądać") || q.includes("ogladac")) a = "🤖 Filmy najlepiej oglądać w aplikacji YouTube. Kliknij lupę na górze, wpisz czego szukasz i dotknij filmu.";
+        else if(q.includes("płat") || q.includes("blik") || q.includes("płacić") || q.includes("placic")) a = "🤖 Aby zapłacić telefonem, musisz mieć aplikację swojego banku. Otwórz ją i poszukaj ikony 'BLIK'.";
+        else if(q.includes("cześć") || q.includes("dzień dobry") || q.includes("czesc") || q.includes("dzien dobry") || q.includes("hej") || q.includes("witaj")) a = "🤖 Dzień dobry! Bardzo miło mi Cię gościć. W czym mogę Ci dzisiaj pomóc?";
+        else if(q.includes("internet") || q.includes("wifi") || q.includes("wi-fi")) a = "🤖 Sprawdź menu na górze ekranu – ikonka łuków (Wi-Fi) musi być niebieska. Jeśli nie jest, kliknij ją.";
+        else if(q.includes("głos") || q.includes("glos") || q.includes("słyszę") || q.includes("slyszec") || q.includes("cicho")) a = "🤖 Naciśnij górny boczny przycisk kilka razy, aby podgłośnić. Sprawdź też, czy nie jest włączony tryb cichy.";
+        else if(q.includes("bateria") || q.includes("ładow") || q.includes("ladow") || q.includes("prąd")) a = "🤖 Podłącz kabel ładowania do dolnego otworu telefonu. Upewnij się, że kabel jest dobrze włożony w ścianę.";
+
+        setTimeout(() => {
+            win.innerHTML += `<div class="bubble bot">${a}</div>`;
+            win.scrollTop = win.scrollHeight;
+        }, 600);
+        inputEl.value = "";
+    }
+
+    // START
     init();
 </script>
 </body>
