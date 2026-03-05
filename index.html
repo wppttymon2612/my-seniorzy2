@@ -587,10 +587,12 @@
                     document.getElementById('btn-back').style.display = 'block';
                     const newsCont = document.createElement('div');
                     newsCont.id = "news-container";
+                    newsCont.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;z-index:3000;background:#fff;";
                     const f = document.createElement('iframe');
-                    f.src = item.link; f.style.width="100%"; f.style.height="100vh"; f.style.border="none";
+                    f.src = item.link; f.style.width="100%"; f.style.height="100%"; f.style.border="none";
                     newsCont.appendChild(f);
                     document.body.appendChild(newsCont);
+                    window.scrollTo(0,0);
                 };
                 const img = item.fotka || `https://picsum.photos/seed/${Math.random()}/400/230`;
                 d.innerHTML = `<img src="${img}" loading="lazy"><div class="card-body"><span class="tag">${item.tag}</span><div class="news-title">${item.tytul}</div></div>`;
